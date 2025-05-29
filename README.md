@@ -13,11 +13,11 @@ Speech diarization is critical for organizing, analyzing, and summarizing audio 
 
 ## Key Features
 
-- ✅ Transformer-based model using **attractors** to identify speakers
-- ✅ End-to-end pipeline for diarization: preprocessing, training, and evaluation
-- ✅ Visualization of speaker segments and diarization error rate (DER)
-- ✅ Multi-GPU training support
-- ✅ Modular code structure for experimentation and extension
+- Transformer-based model using **attractors** to identify speakers
+- End-to-end pipeline for diarization: preprocessing, training, and evaluation
+- Visualization of speaker segments and diarization error rate (DER)
+- Multi-GPU training support
+- Modular code structure for experimentation and extension
 
 ## Techniques & Tools
 
