@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- Paste your SVG code below -->
+        <?xml version="1.0" encoding="UTF-8"?>
+        <svg width="800" height="1200" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background -->
+        <rect width="800" height="1200" fill="#f8f9fa" />
+
+        <!-- Title -->
+        <text x="400" y="30" font-family="Arial" font-size="22" font-weight="bold" text-anchor="middle" fill="#333">Speech Diarization Model Architecture</text>
+
+        <!-- Input -->
+        <rect x="300" y="60" width="200" height="40" rx="5" fill="#d1e7dd" stroke="#0d6efd" stroke-width="2" />
+        <text x="400" y="85" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Input: Mel Spectrogram [B, 80, T]</text>
+
+        <!-- ECAPA-TDNN Encoder Group -->
+        <rect x="150" y="130" width="500" height="380" rx="10" fill="#e8f4f8" stroke="#5bc0de" stroke-width="2" stroke-dasharray="5,5" />
+        <text x="400" y="150" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">ECAPA-TDNN Encoder</text>
+
+        <!-- Initial Conv -->
+        <rect x="300" y="170" width="200" height="30" rx="5" fill="#cfe2ff" stroke="#0d6efd" stroke-width="2" />
+        <text x="400" y="190" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Conv1d (5x5, 80→512)</text>
+
+        <!-- ECAPA-TDNN Blocks -->
+        <rect x="170" y="230" width="460" height="170" rx="10" fill="#d1e7dd" stroke="#198754" stroke-width="2" stroke-dasharray="5,5" />
+        <text x="400" y="250" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">3x ECAPA-TDNN Blocks</text>
+
+        <!-- Block Components -->
+        <rect x="180" y="270" width="140" height="120" rx="5" fill="#fff" stroke="#6c757d" stroke-width="1" />
+        <text x="250" y="290" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">TDNN Block</text>
+        <rect x="190" y="300" width="120" height="25" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="250" y="318" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Conv1d (3x3)</text>
+        <rect x="190" y="330" width="120" height="25" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="250" y="348" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Res2Block</text>
+        <rect x="190" y="360" width="120" height="25" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="250" y="378" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">SE Block</text>
+
+        <!-- Res2Block Detail -->
+        <rect x="330" y="270" width="140" height="120" rx="5" fill="#fff" stroke="#6c757d" stroke-width="1" />
+        <text x="400" y="290" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Res2Block</text>
+        <text x="400" y="310" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Scale=8</text>
+        <rect x="340" y="320" width="120" height="60" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="400" y="345" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">7x Conv1d (3x3)</text>
+        <text x="400" y="365" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Multi-scale processing</text>
+
+        <!-- SE Block Detail -->
+        <rect x="480" y="270" width="140" height="120" rx="5" fill="#fff" stroke="#6c757d" stroke-width="1" />
+        <text x="550" y="290" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">SE Block</text>
+        <rect x="490" y="310" width="120" height="25" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="550" y="328" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Global Avg Pool</text>
+        <rect x="490" y="340" width="120" height="25" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="550" y="358" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">FC → ReLU → FC</text>
+        <rect x="490" y="370" width="120" height="25" rx="3" fill="#e2e3e5" stroke="#6c757d" stroke-width="1" />
+        <text x="550" y="388" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Channel Recalibration</text>
+
+        <!-- Multi-level Feature Aggregation -->
+        <rect x="300" y="410" width="200" height="30" rx="5" fill="#cfe2ff" stroke="#0d6efd" stroke-width="2" />
+        <text x="400" y="430" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">MFA: Conv1d (1536→512)</text>
+
+        <!-- Attentive Stats Pooling -->
+        <rect x="300" y="450" width="200" height="50" rx="5" fill="#f8d7da" stroke="#dc3545" stroke-width="2" />
+        <text x="400" y="470" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Attentive Statistics Pooling</text>
+        <text x="400" y="490" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">[B, 512, T] → [B, 1024]</text>
+
+        <!-- Embedding Layer -->
+        <rect x="160" y="530" width="200" height="40" rx="5" fill="#fff3cd" stroke="#ffc107" stroke-width="2" />
+        <text x="260" y="555" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Speaker Embedding [B, 192]</text>
+
+        <!-- Features Path -->
+        <rect x="440" y="530" width="200" height="40" rx="5" fill="#fff3cd" stroke="#ffc107" stroke-width="2" />
+        <text x="540" y="555" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Framewise Features [B, 512, T]</text>
+
+        <!-- Features Projection Path -->
+        <rect x="440" y="580" width="200" height="30" rx="5" fill="#e2e3e5" stroke="#6c757d" stroke-width="2" />
+        <text x="540" y="600" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Conv1d (512→192)</text>
+
+        <!-- Projected Features -->
+        <rect x="440" y="620" width="200" height="40" rx="5" fill="#d1e7dd" stroke="#198754" stroke-width="2" />
+        <text x="540" y="645" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Projected Features E [B, 192, T]</text>
+
+        <!-- Combiner -->
+        <rect x="160" y="580" width="200" height="120" rx="10" fill="#e8f4f8" stroke="#5bc0de" stroke-width="2" />
+        <text x="260" y="600" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">Combiner</text>
+        <text x="260" y="625" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Learnable Parameter G</text>
+        <text x="260" y="645" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Learnable Alpha</text>
+        <text x="260" y="665" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Sigmoid Gate</text>
+        <text x="260" y="685" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">I₀ [B, 192, S+1]</text>
+
+        <!-- Transformer Decoder Group -->
+        <rect x="150" y="720" width="500" height="300" rx="10" fill="#f8d7da" stroke="#dc3545" stroke-width="2" stroke-dasharray="5,5" />
+        <text x="400" y="740" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">Transformer Decoder</text>
+
+        <!-- Decoder Input Projections -->
+        <rect x="220" y="760" width="170" height="35" rx="5" fill="#cfe2ff" stroke="#0d6efd" stroke-width="2" />
+        <text x="305" y="780" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Query Projection (I₀)</text>
+        
+        <rect x="410" y="760" width="170" height="35" rx="5" fill="#cfe2ff" stroke="#0d6efd" stroke-width="2" />
+        <text x="495" y="780" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Memory Projection (E)</text>
+
+        <!-- Transformer Layers -->
+        <rect x="200" y="805" width="400" height="170" rx="5" fill="#e2e3e5" stroke="#6c757d" stroke-width="2" />
+        <text x="400" y="825" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">6x Transformer Decoder Layers</text>
+        
+        <!-- Decoder Layer Details -->
+        <rect x="220" y="840" width="360" height="120" rx="5" fill="#fff" stroke="#6c757d" stroke-width="1" />
+        <text x="400" y="860" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Decoder Layer</text>
+        
+        <rect x="230" y="870" width="160" height="80" rx="5" fill="#d1e7dd" stroke="#198754" stroke-width="1" />
+        <text x="310" y="890" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Self-Attention</text>
+        <text x="310" y="910" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">8 Heads</text>
+        <text x="310" y="930" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">d_model = 192</text>
+        
+        <rect x="410" y="870" width="160" height="80" rx="5" fill="#d1e7dd" stroke="#198754" stroke-width="1" />
+        <text x="490" y="890" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Cross-Attention</text>
+        <text x="490" y="910" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">8 Heads</text>
+        <text x="490" y="930" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">FFN: 2048 units</text>
+
+        <!-- Decoder Output -->
+        <rect x="300" y="985" width="200" height="35" rx="5" fill="#cfe2ff" stroke="#0d6efd" stroke-width="2" />
+        <text x="400" y="1008" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Output Projection</text>
+
+        <!-- Attractors -->
+        <rect x="300" y="1030" width="200" height="40" rx="5" fill="#fff3cd" stroke="#ffc107" stroke-width="2" />
+        <text x="400" y="1055" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Attractors A [B, 192, S]</text>
+
+        <!-- Final Matrix Multiplication -->
+        <rect x="250" y="1080" width="300" height="50" rx="5" fill="#f8d7da" stroke="#dc3545" stroke-width="2" />
+        <text x="400" y="1105" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">Similarity Matrix: einsum('bds,bdt->bst')</text>
+
+        <!-- Output -->
+        <rect x="300" y="1140" width="200" height="40" rx="5" fill="#d1e7dd" stroke="#198754" stroke-width="2" />
+        <text x="400" y="1165" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#333">Output: [B, S, T]</text>
+        
+        <!-- Arrows -->
+        <!-- Input to Encoder -->
+        <path d="M400 100 L400 170" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Through Encoder -->
+        <path d="M400 200 L400 230" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M400 400 L400 410" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M400 440 L400 450" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Split paths -->
+        <path d="M400 500 L260 530" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M400 500 L540 530" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Features path -->
+        <path d="M540 570 L540 580" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M540 610 L540 620" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Embedding path -->
+        <path d="M260 570 L260 580" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Paths to Transformer -->
+        <path d="M260 700 L305 760" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M540 660 L495 760" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Through Transformer -->
+        <path d="M305 795 L305 805" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M495 795 L495 805" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M400 975 L400 985" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M400 1020 L400 1030" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Final paths -->
+        <path d="M400 1070 L400 1080" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        <path d="M400 1130 L400 1140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+        
+        <!-- Arrow definition -->
+        <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+            </marker>
+        </defs>
+        
+        <!-- Legend -->
+        <rect x="50" y="50" width="130" height="70" rx="5" fill="#fff" stroke="#333" stroke-width="1" />
+        <text x="60" y="70" font-family="Arial" font-size="12" font-weight="bold" fill="#333">Legend:</text>
+        <rect x="60" y="80" width="15" height="15" rx="2" fill="#d1e7dd" stroke="#198754" stroke-width="1" />
+        <text x="80" y="92" font-family="Arial" font-size="10" fill="#333">Input/Output</text>
+        <rect x="60" y="100" width="15" height="15" rx="2" fill="#f8d7da" stroke="#dc3545" stroke-width="1" />
+        <text x="80" y="112" font-family="Arial" font-size="10" fill="#333">Key Components</text>
+        </svg>
+  </body>
+</html>

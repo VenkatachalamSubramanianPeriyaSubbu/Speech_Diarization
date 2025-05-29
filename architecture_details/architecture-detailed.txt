@@ -1,0 +1,113 @@
+## ECAPA-TDNN Speech Diarization Model - Detailed Architecture
+
+### Input
+- **Log Mel Spectrogram**: [B, 80, T] where B is batch size, 80 is the number of mel frequency bins, and T is the variable time dimension
+
+### Encoder Components
+
+#### 1. Initial Convolutional Layer
+- **Conv1D**: 80 → 512 channels, kernel size=5, padding=2
+- **Output**: [B, 512, T]
+
+#### 2. ECAPA-TDNN Blocks (3×)
+Each block consists of:
+
+- **TDNN Layer**: Conv1D with kernel size=3, padding=1
+- **Res2Block**: 
+  - Splits 512 channels into 8 groups of 64 channels each
+  - Applies hierarchical residual convolutions to each group
+  - Recombines through concatenation
+  - Enhances multi-scale feature extraction
+- **Squeeze-Excitation (SE) Block**:
+  - Global pooling across time
+  - Channel-wise attention using FC layers with reduction=8
+  - Recalibrates channel importance
+- **Residual Connection**: Adds original input to the processed output
+
+#### 3. Multi-layer Feature Aggregation (MFA)
+- **Concatenates outputs** from all 3 ECAPA-TDNN blocks: [B, 1536, T]
+- **Conv1D**: 1536 → 512 channels, kernel size=1
+- **Output**: [B, 512, T]
+
+#### 4. Attentive Statistics Pooling
+- **Input**: [B, 512, T]
+- **Process**:
+  - Learns attention weights for each frame using a 2-layer MLP
+  - Computes weighted mean and standard deviation
+  - Concatenates both statistics
+- **Output**: [B, 1024]
+
+#### 5. Final FC Layer
+- **Linear**: 1024 → 192 dimensions
+- **Output**: Speaker embedding [B, 192]
+
+### Encoder Outputs
+1. **Speaker Embedding**: [B, 192] - Global representation of the audio
+2. **Framewise Features**: [B, 512, T] - Time-dependent features for diarization
+
+### Combiner Module
+
+#### Purpose
+Generates initial attractors from the speaker embedding
+
+#### Components
+- **Learnable Alpha**: Scalar parameter that controls the scaling
+- **Learnable Matrix G**: [1, 192, 11] - Expanded to [B, 192, 11]
+- **Sigmoid Gate**: Applied to speaker embedding
+- **Operation**: α * sigmoid(embedding) * G
+- **Output**: Initial Attractors I₀ [B, 192, 11] (10 speakers + 1 non-speech)
+
+### Transformer Decoder
+
+#### Purpose
+Refines initial attractors by attending to the framewise features
+
+#### Components
+1. **Query Projection**: 
+   - Projects I₀ [B, 192, 11] → [11, B, 192]
+   - Input dimension = 192 (embedding dimension)
+
+2. **Memory Projection**:
+   - Projects framewise features [B, 512, T] → [T, B, 192]
+   - Input dimension = 512 (channels from ECAPA output)
+
+3. **Transformer Decoder Blocks** (6×):
+   - Multi-head attention (8 heads)
+   - Feed-forward network (dims: 192 → 2048 → 192)
+   - Layer normalization and residual connections
+
+4. **Output**: 
+   - Final Attractors A [B, 192, 11]
+   - Contains enhanced speaker representations
+
+### Output Processing
+
+1. **Remove Non-Speaker Attractor**:
+   - Discards the first attractor (index 0) which represents non-speech
+   - Keeps speaker attractors [B, 192, 10]
+
+2. **Similarity Computation**:
+   - Dot product between attractors and framewise features
+   - `torch.einsum('bds,bdt->bst', A, E)`
+   - Computes similarity for each speaker at each time frame
+   - Output: [B, 10, T]
+
+3. **Sigmoid Activation**:
+   - Converts similarity scores to probability values [0,1]
+   - Final Output: [B, 10, T] - Speaker activity probability for each time frame
+
+### Key Dimension Summary
+
+- Input: [B, 80, T]
+- Encoder channels: 512
+- Embedding dimension: 192
+- Max speakers: 10 (plus 1 non-speech)
+- Output: [B, 10, T] - Speaker activity probabilities
+
+### Critical Fix
+
+The key issue that was fixed in the code was the dimension mismatch in the transformer decoder:
+
+- The embedding dimension is 192
+- The framewise feature dimension is 512
+- Using separate projection layers ensures both are properly mapped to the model dimension
